@@ -3,7 +3,9 @@
 use lib\Base\Support\Session;
 
 return [
-    'appSpace' => 'app\\Prelang',
+    'Spaces' => [
+        'app\\Prelang',
+    ],
     'viewDir' => [
        'view' => 'app/Views',
     ],

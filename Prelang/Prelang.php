@@ -23,7 +23,7 @@ class   Prelang
         }
 
         if (isset($config['handlers'])) {
-            $this->handlers = Handler::createArray($args, $config['handlers'], $config['appSpace']);
+            $this->handlers = Handler::createArray($args, $config['handlers'], array_merge($config['Spaces'], ['Prelang']));
         }
 
         if (isset($config['before'])) {
@@ -46,7 +46,7 @@ class   Prelang
         if ($pageName !== false) {
             foreach (self::$dirs as $mask => $path) {
                 $pattern = preg_quote('@'.$mask, null);
-                $page = preg_replace("/$pattern/", $path, $pageName).'.php';
+                $page = preg_replace("/$pattern/", $path, $pageName);
 
                 if (file_exists($page) && is_file($page)) {
                     ob_start();
@@ -69,17 +69,6 @@ class   Prelang
         ob_start();
         eval(" ?>".$result."<?php ");
         return ob_get_clean();
-    }
-
-    private function        goOrder(&$order, &$result, &$page, $action) {
-        foreach ($order as $handler => $macros) {
-            if (!is_string($handler)) {
-                $this->goOrder($macros, $result, $page, $action);
-            } else {
-                $handler = $this->handlers[$handler];
-                $handler->process($result, $page, $macros, $action);
-            }
-        }
     }
 
     private function        before($view)
@@ -118,6 +107,17 @@ class   Prelang
         preg_replace('/@use\s*\(\s*[\'\"]?\s*([\w\/ @.]*)\s*[\'\"]?\s*\)/', '', $result);
         foreach ($this->handlers as $handler) {
             $handler->clean($result);
+        }
+    }
+
+    private function        goOrder(&$order, &$result, &$page, $action) {
+        foreach ($order as $handler => $macros) {
+            if (!is_string($handler)) {
+                $this->goOrder($macros, $result, $page, $action);
+            } else {
+                $handler = $this->handlers[$handler];
+                $handler->process($result, $page, $macros, $action);
+            }
         }
     }
 }

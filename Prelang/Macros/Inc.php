@@ -17,7 +17,7 @@ class Inc extends Macros
 
     public function before(Fragment $fragment)
     {
-        $file = Prelang::getPage(trim($fragment[3][0], " \t\n\r\0\x0B'"));
+        $file = Prelang::getPage(trim($fragment->match[3][0], " \t\n\r\0\x0B'"));
         if (!$file) {
             $file = '';
         }

@@ -21,27 +21,31 @@ abstract class  Macros
         }
     }
 
-    public static function      createArray(&$args, &$macrosArray, $appSpace)
+    public static function      createArray(&$args, &$macrosArray, array $spaces)
     {
         $result = [];
 
         foreach ($macrosArray as $key => $value) {
             $macros = $value;
             $params = [];
+            $found = false;
             if (is_string($key)) {
                 $macros = $key;
                 $params = $value;
             }
 
-            $macrosClass = $appSpace.'\\Macros\\'.$macros;
-            if (!class_exists($macrosClass) || !is_subclass_of($macrosClass, self::class)) {
-                $macrosClass = 'Prelang\\Macros\\'.$macros;
-                if (!class_exists($macrosClass) || !is_subclass_of($macrosClass, self::class)) {
-                    throw new \RuntimeException('Macros "'.$macros.'" of prelang does not exists', 500);
+            foreach ($spaces as $space) {
+                $macrosClass = $space.'\\Macros\\'.$macros;
+
+                if (class_exists($macrosClass) && is_subclass_of($macrosClass, self::class)) {
+                    $result[$macros] = new $macrosClass($args, $params);
+                    $found = true;
+                    break;
                 }
             }
-
-            $result[$macros] = new $macrosClass($args, $params);
+            if (!$found) {
+                throw new \RuntimeException('Macros "'.$macros.'" of prelang does not exists', 500);
+            }
         }
 
         return $result;

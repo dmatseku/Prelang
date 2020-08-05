@@ -16,31 +16,36 @@ abstract class  Handler
     abstract protected function macrosBegin($macrosName);
     abstract protected function macrosEnd($macrosName);
 
-    public function             __construct(&$args, &$macrosArray, $appSpace)
+    public function             __construct(&$args, &$macrosArray, array $spaces)
     {
         if (is_array($args)) {
             $this->args = &$args;
         }
 
         if (is_array($macrosArray)) {
-            $this->macros = Macros::createArray($args, $macrosArray, $appSpace);
+            $this->macros = Macros::createArray($args, $macrosArray, $spaces);
         }
     }
 
-    public static function      createArray(&$args, &$handlers, $appSpace)
+    public static function      createArray(&$args, &$handlers, array $spaces)
     {
         $result = [];
 
         foreach ($handlers as $handler => $macros) {
-            $handlerClass = $appSpace.'\\Handlers\\'.$handler;
-            if (!class_exists($handlerClass)) {
-                $handlerClass = 'Prelang\\Handlers\\'.$handler;
-                if (!class_exists($handlerClass)) {
-                    throw new \RuntimeException('Handler "'.$handler.'" of prelang does not exists', 500);
+            $found = false;
+
+            foreach ($spaces as $space) {
+                $handlerClass = $space.'\\Handlers\\'.$handler;
+
+                if (class_exists($handlerClass) && is_subclass_of($handlerClass, self::class)) {
+                    $result[$handler] = new $handlerClass($args, $macros, $spaces);
+                    $found = true;
+                    break;
                 }
             }
-
-            $result[$handler] = new $handlerClass($args, $macros, $appSpace);
+            if (!$found) {
+                throw new \RuntimeException('Handler "'.$handler.'" of prelang does not exists', 500);
+            }
         }
 
         return $result;
