@@ -5,8 +5,6 @@ namespace   Prelang;
 
 abstract class  Handler
 {
-    use ViewArgs;
-
     public const    PARAMS = 1;
     public const    CONTENT = 2;
 
@@ -16,18 +14,14 @@ abstract class  Handler
     abstract protected function macrosBegin($macrosName);
     abstract protected function macrosEnd($macrosName);
 
-    public function             __construct(&$args, &$macrosArray, array $spaces)
+    public function             __construct(&$macrosArray, array $spaces)
     {
-        if (is_array($args)) {
-            $this->args = &$args;
-        }
-
         if (is_array($macrosArray)) {
-            $this->macros = Macros::createArray($args, $macrosArray, $spaces);
+            $this->macros = Macros::createArray($macrosArray, $spaces);
         }
     }
 
-    public static function      createArray(&$args, &$handlers, array $spaces)
+    public static function      createArray(&$handlers, array $spaces)
     {
         $result = [];
 
@@ -38,7 +32,7 @@ abstract class  Handler
                 $handlerClass = $space.'\\Handlers\\'.$handler;
 
                 if (class_exists($handlerClass) && is_subclass_of($handlerClass, self::class)) {
-                    $result[$handler] = new $handlerClass($args, $macros, $spaces);
+                    $result[$handler] = new $handlerClass($macros, $spaces);
                     $found = true;
                     break;
                 }

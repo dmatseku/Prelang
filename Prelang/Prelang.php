@@ -8,22 +8,16 @@ use SplDoublyLinkedList;
 
 class   Prelang
 {
-    use ViewArgs;
-
     private static array    $dirs = [];
     private array           $handlers = [];
     private array           $orderBefore = [];
     private array           $orderAfter = [];
     private array           $orderFinish = [];
 
-    public function         __construct(&$args, $config)
+    public function         __construct($config)
     {
-        if (is_array($args)) {
-            $this->args = &$args;
-        }
-
         if (isset($config['handlers'])) {
-            $this->handlers = Handler::createArray($args, $config['handlers'], array_merge($config['Spaces'], ['Prelang']));
+            $this->handlers = Handler::createArray($config['handlers'], array_merge($config['Spaces'], ['Prelang']));
         }
 
         if (isset($config['before'])) {
@@ -66,9 +60,7 @@ class   Prelang
         $this->after($result, $pageList);
         $this->finish($result);
 
-        ob_start();
-        eval(" ?>".$result."<?php ");
-        return ob_get_clean();
+        return $result;
     }
 
     private function        before($view)

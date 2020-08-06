@@ -6,22 +6,16 @@ namespace   Prelang;
 
 abstract class  Macros
 {
-    use ViewArgs;
-
     abstract public function    name(): string;
     abstract public function    before(Fragment $fragment);
     abstract public function    after(Fragment $fragment);
     abstract public function    finish(Fragment $fragment);
     abstract public function    clean(Fragment $fragment): void;
 
-    public function             __construct(&$args, $params)
-    {
-        if (is_array($args)) {
-            $this->args = &$args;
-        }
-    }
+    public function             __construct($params)
+    {}
 
-    public static function      createArray(&$args, &$macrosArray, array $spaces)
+    public static function      createArray(&$macrosArray, array $spaces)
     {
         $result = [];
 
@@ -38,7 +32,7 @@ abstract class  Macros
                 $macrosClass = $space.'\\Macros\\'.$macros;
 
                 if (class_exists($macrosClass) && is_subclass_of($macrosClass, self::class)) {
-                    $result[$macros] = new $macrosClass($args, $params);
+                    $result[$macros] = new $macrosClass($params);
                     $found = true;
                     break;
                 }
