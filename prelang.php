@@ -1,7 +1,5 @@
 <?php
 
-use lib\Base\Support\Session;
-
 return [
     'Spaces' => [
         'app\\Prelang',
