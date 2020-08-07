@@ -99,6 +99,7 @@ abstract class  Handler
         $match = new MacrosMatch($this->modules);
         $fragment = new Fragment();
         $fragment->result = &$result;
+        $fragment->page = &$result;
 
         foreach ($this->macros as $macros) {
             $name = $macros->name();
