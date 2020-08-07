@@ -56,19 +56,19 @@ Extensible html preprocessor. This library looks for macros in files, replaces t
     @endin
 
 ## Structure
-The preprocessor has a single macro cannot be disabled or removed: `@use`. This macro is a command to inherit from another file.
+The preprocessor has a single macro that cannot be disabled or removed: `@use`. This macro is a command to inherit from another file.
 Other macros and handlers can be overridden or removed.
 
 So preprocessor has three stages:
 - before - the library calls each specified and found macro for the given file, finds `@use` in it, goes to the next file, etc.
 - after - the library takes the last page as a result and for each file, together with the result, calls the specified macros.
-- finish - the library calls each specified macros for result.
+- finish - the library calls each specified macros for the result.
 
-Before doing this, preprocessor creates and saves objects of all handlers, and each handler creates and saves objects of all macros.
+Before doing this, the preprocessor creates and saves objects of all handlers, and each handler creates and saves objects of all macros.
 
 ## Usage
-`Prelang\Prelang` class takes an array as configuration. The basic config file is attached to the project.<br>
-Create object of `Prelang\Prelang` in your view. Then take result from `Prelang->process()` function. Finally for printing html code, export input arguments and call `eval("?>".result of processing."<?php")`:
+`Prelang\Prelang` class takes an array as configuration. This project has the basic config file in the root directory.<br>
+Create object of `Prelang\Prelang` in your view. Then take result from `Prelang->process()` function. Finally, for printing html code, export input arguments and call `eval("?>".result of processing."<?php")`:
 
     $prelang = new Prelang\Prelang(require 'prelang.php');
     $result = $prelang->process('@view/test.php');
@@ -144,4 +144,103 @@ These arrays support nesting. So if you need to call macros of the same handler 
 ## Standard macros
 Here is a list of standard macros:
 
-### To be continued...
+#### Templating
+- ##### use
+    Depth file inheritance:
+
+    
+    @use('path_to_file')
+    
+- ##### section
+    Declare the section in this place:
+    
+    
+    @section('section_name')
+- ##### in
+    Implementation for the specified section:
+    
+    
+    @in('section_name')
+    ...
+    @endin
+- ##### include
+    Include the content of the file in this place:
+    
+    
+    @include('path_to_file')
+#### Code insertions
+**Notice**: it is better to use these macros instead of original `<?php ?>` code insertion because the original insertion will be executed before processing starts,
+whereas these macros will insert code in result string without executing.
+- ##### code
+    `<?php ?>` analog:
+    
+    
+    @code
+    ...
+    @endcode
+- ##### conditional operator
+    `<?php if (condition): ?>` etc analog:
+    
+    
+    @if(condition)
+    ...
+    [@elseif(condition)]
+    ...
+    [@else]
+    ...
+    @endif
+- ##### loop
+    `<?php for (...): ?>` etc analog:
+    
+    
+    @for (...)
+    ...
+    @endfor
+    
+    @foreach (...)
+    ...
+    @endforeach
+    
+    @while (...)
+    ...
+    @endwhile
+    
+#### echo
+- ##### simple print
+    `<?= ... ?>` analog:
+    
+    
+    {!! ... !!}
+- ##### print special chars
+    `<?= htmlspecialchars(...) ?>` analog:
+    
+    
+    {{ ... }}
+    
+## Customization
+### Handlers
+In your custom handler you can choose syntax and content of macros.
+1. In the namespace you specified in the config create a class `Handlers\ClassName` that extends class `Prelang\Handler`.
+2. Functions `macrosBegin` and `macrosEnd` take macro name and must return formatted begin and end of macros.
+3. You can override __construct and call functions to specify the content of macros:
+
+
+    $this->with(self::PARAMS);
+    // like @include ('file')
+    
+    $this->with(self::CONTENT);
+    // like {{ $i }}
+    
+    $this->with(self::PARAMS|self::CONTENT);
+    // like @if (true) echo 'hello'; @endif
+    
+### Macros
+In your custom macro you can write logic for found macro in the file.
+1. In the namespace you specified in the config create a class `Macros\ClassName` that extends class `Prelang\Macro`.
+2. Function `name()` returns name of macro for the files.
+3.
+    - There are three functions in your class: `before`, `after`, `finish`, which will be called at the appropriate preprocessing stages.
+If you don't want to do anything in some stage, you can leave the function empty.
+    - These functions return the replacement string. If you return a string,
+the macro will be replaced by it, and the searching will start from the beginning of the file, otherwise, nothing will be replaced, and the search will start after the found macro.
+4. The `clean` function will be called after preprocessing and does not need to clean up from the macro itself, but can clean up from insertions associated with it.
