@@ -45,12 +45,12 @@ abstract class  Handler
         return $result;
     }
 
-    protected function          has($module)
+    protected function          has($module): bool
     {
         return ($this->modules & $module) > 0;
     }
 
-    protected function          with($module)
+    protected function          with($module): void
     {
         $this->modules |= $module;
     }
@@ -72,7 +72,7 @@ abstract class  Handler
 
     public function             process(&$result, &$page, $macrosArray, $partName)
     {
-        $match = new MacrosMatch([$this->has(self::PARAMS), $this->has(self::CONTENT)]);
+        $match = new MacrosMatch($this->modules);
         $fragment = new Fragment();
         $fragment->result = &$result;
         $fragment->page = &$page;
@@ -96,7 +96,7 @@ abstract class  Handler
 
     public function             clean(&$result)
     {
-        $match = new MacrosMatch([$this->has(self::PARAMS), $this->has(self::CONTENT)]);
+        $match = new MacrosMatch($this->modules);
         $fragment = new Fragment();
         $fragment->result = &$result;
 
@@ -109,6 +109,7 @@ abstract class  Handler
                     throw new \RuntimeException('Regex error', 500);
                 }
             }
+            $fragment->match = [];
             $macros->clean($fragment);
         }
     }

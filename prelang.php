@@ -18,7 +18,8 @@ return [
         'BaseFull' => [
             'Code',
         ],
-        'BaseFullParam' => [
+	'BaseFullParam' => [
+            'Define',
             'Error',
             'In',
             'OperatorIf',
@@ -33,6 +34,7 @@ return [
     ],
     'before' => [
         'BaseCut' => ['Inc'],
+        'BaseFullParam' => ['Define'],
     ],
     'after' => [
         'BaseFullParam' => ['In'],

@@ -244,3 +244,6 @@ If you don't want to do anything in some stage, you can leave the function empty
     - These functions return the replacement string. If you return a string,
 the macro will be replaced by it, and the searching will start from the beginning of the file, otherwise, nothing will be replaced, and the search will start after the found macro.
 4. The `clean` function will be called after preprocessing and does not need to clean up from the macro itself, but can clean up from insertions associated with it.
+5. Structure `Fragment` has LINKS to strings of result, actual page and found match.
+In the `before` stage `result` and `page` variables have the same link to the actual file. In the `after` stage `result` has link to the result and `page` has link to the actual file.
+In the `finish` stage and `clean` function `result` and `page` have the same link to the result.

@@ -6,13 +6,11 @@ namespace Prelang;
 
 class MacrosMatch
 {
-    private array   $modules = [false, false];
+    private int $modules;
 
-    public function             __construct(array $modules)
+    public function             __construct(int $modules)
     {
-        if (count($modules) >= 2) {
-            $this->modules = $modules;
-        }
+        $this->modules = $modules;
     }
 
     private static function     getBlockSize(&$code, $offset, $open = '(', $close = ')')
@@ -36,7 +34,7 @@ class MacrosMatch
     }
 
     private function            getStart(&$code, $beginString, $offset, &$length) {
-        if ($this->modules[0]) {
+        if ($this->modules & 1) {
             $pattern = "(".preg_quote($beginString, null).")(\s*)\(";
         } else {
             $pattern = "(".preg_quote($beginString, null).")()";
@@ -49,7 +47,7 @@ class MacrosMatch
     }
 
     private function            getParams(&$code, &$length, &$pattern) {
-        if ($this->modules[0]) {
+        if ($this->modules & 1) {
             $length++;
             $blockLength = self::getBlockSize($code, $length);
             $pattern .= '([\s\S]{'.$blockLength.'})\)';
@@ -60,7 +58,7 @@ class MacrosMatch
     }
 
     private function            getContent(&$code, &$length, &$pattern, $beginString, $endString) {
-        if ($this->modules[1]) {
+        if ($this->modules & 2) {
             $pattern .= '([\s\S]{'.self::getBlockSize($code, $length, $beginString, $endString).'})';
         } else {
             $pattern .= "()";
@@ -68,7 +66,7 @@ class MacrosMatch
     }
 
     private function            getFinish(&$pattern, $endString) {
-        if ($this->modules[1]) {
+        if ($this->modules & 2) {
             $pattern .= '('.preg_quote($endString, null).')';
         } else {
             $pattern .= "()";
