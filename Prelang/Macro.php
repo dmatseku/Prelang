@@ -4,7 +4,7 @@
 namespace   Prelang;
 
 
-abstract class  Macros
+abstract class  Macro
 {
     abstract public function    name(): string;
     abstract public function    before(Fragment $fragment);

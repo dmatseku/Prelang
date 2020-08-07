@@ -5,9 +5,9 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macros;
+use Prelang\Macro;
 
-class Simple extends Macros
+class Simple extends Macro
 {
     public function name(): string
     {

@@ -5,10 +5,10 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macros;
+use Prelang\Macro;
 use Prelang\Prelang;
 
-class Inc extends Macros
+class Inc extends Macro
 {
     public function name(): string
     {

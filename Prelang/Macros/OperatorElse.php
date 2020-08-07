@@ -5,9 +5,9 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macros;
+use Prelang\Macro;
 
-class OperatorElse extends Macros
+class OperatorElse extends Macro
 {
     public function name(): string
     {

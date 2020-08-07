@@ -5,9 +5,9 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macros;
+use Prelang\Macro;
 
-abstract class ReplaceOperator extends Macros
+abstract class ReplaceOperator extends Macro
 {
     abstract protected static function  open(Fragment $fragment): string;
     abstract protected static function  close(Fragment $fragment): string;

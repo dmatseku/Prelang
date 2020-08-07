@@ -17,7 +17,7 @@ abstract class  Handler
     public function             __construct(&$macrosArray, array $spaces)
     {
         if (is_array($macrosArray)) {
-            $this->macros = Macros::createArray($macrosArray, $spaces);
+            $this->macros = Macro::createArray($macrosArray, $spaces);
         }
     }
 
