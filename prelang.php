@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'Spaces' => [
+    'spaces' => [
         'app\\Prelang',
     ],
     'viewDir' => [

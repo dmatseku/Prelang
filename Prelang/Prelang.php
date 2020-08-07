@@ -17,7 +17,7 @@ class   Prelang
     public function         __construct($config)
     {
         if (isset($config['handlers'])) {
-            $this->handlers = Handler::createArray($config['handlers'], array_merge($config['Spaces'], ['Prelang']));
+            $this->handlers = Handler::createArray($config['handlers'], array_merge($config['spaces'], ['Prelang']));
         }
 
         if (isset($config['before'])) {
