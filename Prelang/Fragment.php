@@ -6,7 +6,7 @@ namespace Prelang;
 
 class Fragment
 {
-    public  $page = '';
-    public  $result = '';
-    public  $match = [];
+    public string   $page = '';
+    public string   $result = '';
+    public ?array   $match = [];
 }

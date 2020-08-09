@@ -4,23 +4,21 @@
 namespace Prelang\Handlers;
 
 
-use Prelang\Handler;
+use Prelang\Handler\Handler;
 
 class Out extends Handler
 {
-    public function __construct(&$macrosArray, $appSpace)
+    public function __construct()
     {
-        parent::__construct($macrosArray, $appSpace);
-
         $this->with(self::CONTENT);
     }
 
-    protected function macrosBegin($macrosName)
+    protected function macrosBegin(string $macrosName): string
     {
         return '{'.$macrosName;
     }
 
-    protected function macrosEnd($macrosName)
+    protected function macrosEnd(string $macrosName): string
     {
         if ($macrosName === '{') {
             $macrosName = '}';

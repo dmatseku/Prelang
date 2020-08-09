@@ -5,7 +5,7 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macro;
+use Prelang\Macro\Macro;
 
 class Simple extends Macro
 {
@@ -14,14 +14,14 @@ class Simple extends Macro
         return '!!';
     }
 
-    public function before(Fragment $fragment) {return null;}
+    public function before(Fragment $fragment): ?string {return null;}
 
-    public function after(Fragment $fragment) {return null;}
+    public function after(Fragment $fragment): ?string {return null;}
 
-    public function finish(Fragment $fragment)
+    public function finish(Fragment $fragment): ?string
     {
         return '<?= '.$fragment->match[4][0].' ?>';
     }
 
-    public function clean(Fragment $fragment): void {}
+    public function clean(string &$result): void {}
 }

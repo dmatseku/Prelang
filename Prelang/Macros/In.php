@@ -5,7 +5,7 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macro;
+use Prelang\Macro\Macro;
 
 class In extends Macro
 {
@@ -14,9 +14,9 @@ class In extends Macro
         return 'in';
     }
 
-    public function before(Fragment $fragment) {return null;}
+    public function before(Fragment $fragment): ?string {return null;}
 
-    public function after(Fragment $fragment)
+    public function after(Fragment $fragment): ?string
     {
         $contentNames = explode(',', trim($fragment->match[3][0], " \t\n\r\0\x0B'\""));
 
@@ -34,10 +34,10 @@ class In extends Macro
         return null;
     }
 
-    public function finish(Fragment $fragment) {return null;}
+    public function finish(Fragment $fragment): ?string {return null;}
 
-    public function clean(Fragment $fragment): void
+    public function clean(string &$result): void
     {
-        $fragment->result = preg_replace("/@section\s*\(\s*'?\s*([\w\/]\s*)*'?\s*\)/", '', $fragment->result);
+        $result = preg_replace("/@section\s*\(\s*'?\s*([\w\/]\s*)*'?\s*\)/", '', $result);
     }
 }

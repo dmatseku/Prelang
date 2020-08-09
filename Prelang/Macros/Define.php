@@ -3,8 +3,8 @@
 namespace Prelang\Macros;
 
 use Prelang\Fragment;
-use Prelang\Macro;
-use Prelang\MacrosMatch;
+use Prelang\Macro\Macro;
+use Prelang\Handler\MacrosMatch;
 
 class Define extends Macro
 {
@@ -15,7 +15,7 @@ class Define extends Macro
         return 'define';
     }
 
-    public function         before(Fragment $fragment)
+    public function         before(Fragment $fragment): ?string
     {
         $args = explode(',', trim($fragment->match[3][0], " \t\n\r\0\x0B'\""));
 
@@ -38,16 +38,17 @@ class Define extends Macro
         return '';
     }
 
-    public function         after(Fragment $fragment) {}
+    public function         after(Fragment $fragment): ?string {return null;}
 
-    public function         finish(Fragment $fragment) {}
+    public function         finish(Fragment $fragment): ?string {return null;}
 
-    public function         clean(Fragment $fragment): void {
+    public function         clean(string &$result): void
+    {
         foreach ($this->defined as $macro => $data) {
             if (!empty($data['params'])) {
-                self::replaceParams($fragment->result, $macro, $data['content'], $data['params']);
+                self::replaceParams($result, $macro, $data['content'], $data['params']);
             } else {
-                $fragment->result = preg_replace("/\W".$macro."\W/", $data['content'], $fragment->result);
+                $result = preg_replace("/\W".$macro."\W/", $data['content'], $result);
             }
         }
     }

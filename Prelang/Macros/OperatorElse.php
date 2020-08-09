@@ -5,7 +5,7 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macro;
+use Prelang\Macro\Macro;
 
 class OperatorElse extends Macro
 {
@@ -14,14 +14,14 @@ class OperatorElse extends Macro
         return 'else';
     }
 
-    public function before(Fragment $fragment) {return null;}
+    public function before(Fragment $fragment): ?string {return null;}
 
-    public function after(Fragment $fragment) {return null;}
+    public function after(Fragment $fragment): ?string {return null;}
 
-    public function finish(Fragment $fragment)
+    public function finish(Fragment $fragment): ?string
     {
         return "<?php else: ?>";
     }
 
-    public function clean(Fragment $fragment): void {}
+    public function clean(string &$result): void {}
 }

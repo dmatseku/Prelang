@@ -4,17 +4,17 @@
 namespace Prelang\Handlers;
 
 
-use Prelang\Handler;
+use Prelang\Handler\Handler;
 
 class Base extends Handler
 {
 
-    protected function macrosBegin($macrosName)
+    protected function macrosBegin(string $macrosName): string
     {
         return "@$macrosName";
     }
 
-    protected function macrosEnd($macrosName)
+    protected function macrosEnd(string $macrosName): string
     {
         return "@end$macrosName";
     }

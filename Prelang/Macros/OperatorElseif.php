@@ -5,7 +5,7 @@ namespace Prelang\Macros;
 
 
 use Prelang\Fragment;
-use Prelang\Macro;
+use Prelang\Macro\Macro;
 
 class OperatorElseif extends Macro
 {
@@ -14,14 +14,14 @@ class OperatorElseif extends Macro
         return 'elseif';
     }
 
-    public function before(Fragment $fragment) {return null;}
+    public function before(Fragment $fragment): ?string {return null;}
 
-    public function after(Fragment $fragment) {return null;}
+    public function after(Fragment $fragment): ?string {return null;}
 
-    public function finish(Fragment $fragment)
+    public function finish(Fragment $fragment): ?string
     {
         return "<?php elseif (".trim($fragment->match[3][0], " \t\n\r\0\x0B'\"")."): ?>";
     }
 
-    public function clean(Fragment $fragment): void {}
+    public function clean(string &$result): void {}
 }

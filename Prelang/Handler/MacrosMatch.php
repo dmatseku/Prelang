@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Prelang;
+namespace Prelang\Handler;
 
 
 class MacrosMatch
@@ -13,7 +13,7 @@ class MacrosMatch
         $this->modules = $modules;
     }
 
-    private static function     getBlockSize(&$code, $offset, $open = '(', $close = ')')
+    private static function getBlockSize(string &$code, int $offset, string $open = '(', string $close = ')'): int
     {
         $block = 1;
         $openLength = strlen($open);
@@ -33,7 +33,8 @@ class MacrosMatch
         return $offset - $start - $closeLength;
     }
 
-    private function            getStart(&$code, $beginString, $offset, &$length) {
+    private function        getStart(string &$code, string $beginString, int $offset, int &$length)
+    {
         if ($this->modules & 1) {
             $pattern = "(".preg_quote($beginString, null).")(\s*)\(";
         } else {
@@ -46,7 +47,8 @@ class MacrosMatch
         return false;
     }
 
-    private function            getParams(&$code, &$length, &$pattern) {
+    private function        getParams(string &$code, int &$length, string &$pattern): void
+    {
         if ($this->modules & 1) {
             $length++;
             $blockLength = self::getBlockSize($code, $length);
@@ -57,7 +59,8 @@ class MacrosMatch
         }
     }
 
-    private function            getContent(&$code, &$length, &$pattern, $beginString, $endString) {
+    private function        getContent(string &$code, int &$length, string &$pattern, string $beginString, string $endString): void
+    {
         if ($this->modules & 2) {
             $pattern .= '([\s\S]{'.self::getBlockSize($code, $length, $beginString, $endString).'})';
         } else {
@@ -65,7 +68,7 @@ class MacrosMatch
         }
     }
 
-    private function            getFinish(&$pattern, $endString) {
+    private function        getFinish(string &$pattern, string $endString) {
         if ($this->modules & 2) {
             $pattern .= '('.preg_quote($endString, null).')';
         } else {
@@ -73,7 +76,14 @@ class MacrosMatch
         }
     }
 
-    public function             match(&$code, $beginString, $endString, $offset = 0)
+    /**
+     * @param string $code
+     * @param string $beginString
+     * @param string $endString
+     * @param int $offset
+     * @return array|null
+     */
+    public function         match(string &$code, string $beginString, string $endString, int $offset = 0): ?array
     {
         $length = 0;
 

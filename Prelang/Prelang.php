@@ -4,20 +4,31 @@
 namespace   Prelang;
 
 
+use Prelang\Handler\HandlerFactory;
+use Prelang\Macro\MacroFactory;
 use SplDoublyLinkedList;
 
 class   Prelang
 {
     private static array    $dirs = [];
     private array           $handlers = [];
+    private array           $macros = [];
     private array           $orderBefore = [];
     private array           $orderAfter = [];
     private array           $orderFinish = [];
 
-    public function         __construct($config)
+    public function         __construct(array $config)
     {
+        $spaces = [];
+        if (isset($config['spaces'])) {
+            $spaces = array_merge($config['spaces'], ['Prelang']);
+        }
+
         if (isset($config['handlers'])) {
-            $this->handlers = Handler::createArray($config['handlers'], array_merge($config['spaces'], ['Prelang']));
+            $this->handlers = HandlerFactory::createArray($config['handlers'], $spaces);
+        }
+        if (isset($config['macros'])) {
+            $this->macros = MacroFactory::createArray($config['macros'], $spaces);
         }
 
         if (isset($config['before'])) {
@@ -35,25 +46,22 @@ class   Prelang
         }
     }
 
-    public static function  getPage($pageName)
+    public static function  getPage(string $pageName): string
     {
-        if ($pageName !== false) {
-            foreach (self::$dirs as $mask => $path) {
-                $pattern = preg_quote('@'.$mask, null);
-                $page = preg_replace("/$pattern/", $path, $pageName);
+        foreach (self::$dirs as $mask => $path) {
+            $pattern = preg_quote('@'.$mask, null);
+            $page = preg_replace("/$pattern/", $path, $pageName);
 
-                if (file_exists($page) && is_file($page)) {
-                    ob_start();
-                    require $page;
-                    return ob_get_clean();
-                }
+            if (file_exists($page) && is_file($page)) {
+                ob_start();
+                require $page;
+                return ob_get_clean();
             }
-            throw new \RuntimeException('View not found', 500);
         }
-        return false;
+        throw new \RuntimeException('View not found', 500);
     }
 
-    public function         process($view)
+    public function         process(string $view): string
     {
         $pageList = $this->before($view);
         $result = $pageList->isEmpty() ? '' : $pageList->pop();
@@ -63,7 +71,7 @@ class   Prelang
         return $result;
     }
 
-    private function        before($view)
+    private function        before(string $view): SplDoublyLinkedList
     {
         $pageList = new SplDoublyLinkedList();
         $views = [];
@@ -77,14 +85,14 @@ class   Prelang
                 $view = $matches[1];
                 $views[$matches[1]] = 1;
             } else {
-                $view = false;
+                break;
             }
         }
 
         return $pageList;
     }
 
-    private function        after(&$result, $pageList)
+    private function        after(string &$result, SplDoublyLinkedList $pageList): void
     {
         while (!$pageList->isEmpty()) {
             $page = $pageList->pop();
@@ -92,24 +100,24 @@ class   Prelang
         }
     }
 
-    private function        finish(&$result)
+    private function        finish(string &$result): void
     {
         $this->goOrder($this->orderFinish, $result, $result, 'finish');
 
         preg_replace('/@use\s*\(\s*[\'\"]?\s*([\w\/ @.]*)\s*[\'\"]?\s*\)/', '', $result);
-        foreach ($this->handlers as $handler) {
-            $handler->clean($result);
+        foreach ($this->macros as $macro) {
+            $macro->cleanHandle($result, $this->handlers);
         }
     }
 
-    private function        goOrder(&$order, &$result, &$page, $action) {
-        foreach ($order as $handler => $macros) {
-            if (!is_string($handler)) {
-                $this->goOrder($macros, $result, $page, $action);
-            } else {
-                $handler = $this->handlers[$handler];
-                $handler->process($result, $page, $macros, $action);
-            }
+    private function        goOrder(array &$order, string  &$result, string &$page, string $action): void
+    {
+        $fragment = new Fragment();
+        $fragment->page = &$page;
+        $fragment->result = &$result;
+
+        foreach ($order as $macro) {
+            $this->macros[$macro]->handle($fragment, $this->handlers, $action);
         }
     }
 }
