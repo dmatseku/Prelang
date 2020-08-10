@@ -64,7 +64,7 @@ So preprocessor has three stages:
 - after - the library takes the last page as a result and for each file, together with the result, calls the specified macros.
 - finish - the library calls each specified macros for the result.
 
-Before doing this, the preprocessor creates and saves objects of all handlers, and each handler creates and saves objects of all macros.
+Before doing this, the preprocessor creates and saves objects of all handlers and macros.
 
 ## Usage
 `Prelang\Prelang` class takes an array as configuration. This project has the basic config file in the root directory.<br>
@@ -98,6 +98,7 @@ So in this example, when you pass the file path to preprocessor or macros `@use`
 
     '@view/relative_path'
 #### Handlers
+#### DEPRECATED
 This array contains macro dependencies to handlers. Example:
 
     'handlers' => [
@@ -117,6 +118,7 @@ You can pass parameters to macros:
     ]
 These parameters you will see in the constructor of `macros1`.
 #### Before, After, Finish
+#### DEPRECATED
 These arrays determine which macros and in what order will be called. Example:
 
     'finish' => [
