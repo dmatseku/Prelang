@@ -26,7 +26,7 @@ abstract class  Handler
         $this->modules |= $module;
     }
 
-    private static function     replace(string &$string, ?string $replacement, array $fullMatch): int
+    private static function     replace(string &$string, ?string $replacement, array $fullMatch, int &$offset): void
     {
         $position = $fullMatch[1];
         $substr = $fullMatch[0];
@@ -34,11 +34,9 @@ abstract class  Handler
 
         if (is_string($replacement) && substr($string, $position, $substrlen) === $substr) {
             $string = substr_replace($string, $replacement, $position, $substrlen);
-            $offset = 0;
         } else {
             $offset = $position + $substrlen;
         }
-        return $offset;
     }
 
     public function             handle(Fragment $fragment, Macro $macro, string $partName): void
@@ -47,14 +45,17 @@ abstract class  Handler
         $offset = 0;
 
         while ($fragment->match = $match->match($fragment->page, $this->macrosBegin($macro->name()),
-                                                $this->macrosEnd($macro->name()), $offset)) {
+            $this->macrosEnd($macro->name()), $offset)) {
             $partResult = $macro->$partName($fragment);
-            $offset = self::replace($fragment->page, $partResult, $fragment->match[0]);
+            self::replace($fragment->page, $partResult, $fragment->match[0], $offset);
         }
+
+        $offset = 0;
+
         while ($fragment->match = $match->match($fragment->result, $this->macrosBegin($macro->name()),
-                                                $this->macrosEnd($macro->name()), $offset)) {
+            $this->macrosEnd($macro->name()), $offset)) {
             $partResult = $macro->$partName($fragment);
-            $offset = self::replace($fragment->result, $partResult, $fragment->match[0]);
+            self::replace($fragment->result, $partResult, $fragment->match[0], $offset);
         }
     }
 
